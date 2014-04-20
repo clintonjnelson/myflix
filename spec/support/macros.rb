@@ -6,8 +6,16 @@ def sign_in_user(user = current_user)
   session[:user_id] = user.id
 end
 
+def sign_in_admin(admin_user = current_admin)
+  session[:user_id] = admin_user.id
+end
+
 def current_user
   @current_user ||= Fabricate(:user)
+end
+
+def current_admin
+  @current_admin ||= Fabricate(:admin)
 end
 
 ############################## FEATURE SPEC METHODS ############################
@@ -16,7 +24,9 @@ def click_video_image_link(video)
   find(:xpath, "//a[@href='/videos/#{video.id}']").click
 end
 
-
+def signout
+  click_link "Sign Out"
+end
 
 def signin_user(user=nil)
   joe = user || Fabricate(:user)

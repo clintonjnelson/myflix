@@ -7,6 +7,7 @@ describe Video do
   it { should have_many(:reviews).order("created_at DESC")}
   it { should validate_presence_of(:title) }
   it { should validate_presence_of(:description)}
+  it { should validate_presence_of(:video_url) }
 
   let(:video) { Fabricate(:video, title: "Family Guy") }
 
@@ -16,8 +17,8 @@ describe Video do
     it "responds to all attributes" do
       expect(video).to respond_to(:title)
       expect(video).to respond_to(:description)
-      expect(video).to respond_to(:sm_cover_locn)
-      expect(video).to respond_to(:lg_cover_locn)
+      expect(video).to respond_to(:small_cover)
+      expect(video).to respond_to(:large_cover)
       expect(video).to respond_to(:categories)
       expect(video).to respond_to(:reviews)
     end

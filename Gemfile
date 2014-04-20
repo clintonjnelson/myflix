@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 ruby '2.0.0'
 
 gem 'bcrypt-ruby'
-gem 'bootstrap_form', '2.0.1'
+gem 'bootstrap_form'
 gem 'bootstrap-sass'
 gem 'coffee-rails'
 gem 'haml-rails'
@@ -14,6 +14,11 @@ gem 'sinatra', require: nil
 gem 'uglifier'
 gem 'unicorn'
 gem 'paratrooper'
+gem 'carrierwave'
+gem 'mini_magick'
+gem 'fog'
+gem 'figaro'
+gem 'stripe'
 
 
 group :development, :test do
