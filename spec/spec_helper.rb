@@ -57,6 +57,8 @@ require 'capybara/rspec'
 require 'capybara/email/rspec'
 require 'sidekiq/testing'
 require 'sidekiq/testing/inline'
+require 'stripe'
+require 'vcr'
 #Sidekiq::Testing.fake!
 
 
@@ -67,6 +69,12 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 # Checks for pending migrations before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.check_pending! if defined?(ActiveRecord::Migration)
+
+VCR.configure do |c|
+  c.cassette_library_dir = 'spec/cassettes'
+  c.hook_into :webmock
+  c.configure_rspec_metadata!
+end
 
 RSpec.configure do |config|
   # ## Mock Framework
@@ -94,6 +102,7 @@ RSpec.configure do |config|
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
 
+  config.treat_symbols_as_metadata_keys_with_true_values = true
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.

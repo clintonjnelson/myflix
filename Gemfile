@@ -43,6 +43,8 @@ group :test do
   gem 'selenium-webdriver', '~> 2.39.0'
   gem 'shoulda-matchers'
   gem 'fabrication', '1.2.0'
+  gem 'webmock'
+  gem 'vcr'
 end
 
 group :development do
