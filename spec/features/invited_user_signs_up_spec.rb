@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-feature "Invited Friend Signs Up" do
+feature "Invited Friend Signs Up", { js: true, vcr: true } do
   given(:joe) { Fabricate(:user) }
 
   scenario "user sends invitation to friend who signs up" do
@@ -42,7 +42,7 @@ def user_invites_a_friend
 end
 
 def joe_signs_out
-  click_link "Sign Out"
+  visit signout_path
 end
 
 def friend_accepts_invitation
@@ -58,11 +58,15 @@ def friend_signs_up
   registration_form_has_email_already_filled_in
   fill_in "Password", with: "password"
   fill_in "Full Name", with: "Jennifer"
+  fill_in "Credit Card Number", with: "4242424242424242"
+  fill_in "Security Code", with: "333"
+  select "7 - July", from: "date_month"
+  select "2015", from: "date_year"
   click_button "Sign Up"
 end
 
 def friend_signs_out
-  click_link "Sign Out"
+  visit signout_path
 end
 
 def already_following(user)

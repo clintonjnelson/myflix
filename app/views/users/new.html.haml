@@ -20,14 +20,14 @@
           .form-group
             %span.payment-errors
           .form-group
-            %label.control-label.col-sm-2 Credit Card Number
+            %label.control-label.col-sm-2(for="credit-card-number") Credit Card Number
             .col-sm-6
               /last input class is for reference in the JS function
-              %input.form-control.card-number(type="text")
+              %input.form-control.card-number#credit-card-number(type="text")
           .form-group
-            %label.control-label.col-sm-2 Security Code
+            %label.control-label.col-sm-2(for="security-code") Security Code
             .col-sm-6
-              %input.form-control.card-cvc(type="text")
+              %input.form-control.card-cvc#security-code(type="text")
           .form-group
             %label.control-label.col-sm-2 Expiration
             .col-sm-3

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'webmock/rspec'
 
 describe UsersController do
   # Sidekiq::Testing.fake! do
@@ -54,9 +55,14 @@ describe UsersController do
     end
 
     describe "POST create" do
-      context "with valid info" do
+
+      context "with valid user & credit card info" do
+        before do
+          charge = double(:charge, successful?: true)
+          StripeWrapper::Charge.should_receive(:create).and_return(charge)
+        end
         let(:joe) { Fabricate.build(:user) }
-        let(:params) { {user: { name: joe.name, email: joe.email, password: joe.password }} }
+        let(:params) { {user: { name: joe.name, email: joe.email, password: joe.password }, stripeToken: "123" } }
 
         it "makes a new user" do
           expect do
@@ -70,7 +76,7 @@ describe UsersController do
 
         context "email sending" do
           before { post :create, params }
-          after  do
+          after do
             ActionMailer::Base.deliveries.clear
             Sidekiq::Worker.clear_all
           end
@@ -96,13 +102,17 @@ describe UsersController do
         end
       end
 
-      context "with valid info AND invitation token, adds the following" do
+      context "with valid user info, credit card info, AND invitation token" do
         let(:jen)    { Fabricate(:user) }
         let(:invite) { Fabricate(:invitation, inviter_id: jen.id) }
         let(:joe)    { Fabricate.build(:user) }
         let(:params) { {user: { name: joe.name, email: joe.email, password: joe.password },
                         token: invite.token} }
-        before { post :create, params }
+        before do
+          charge = double(:charge, successful?: true)
+          StripeWrapper::Charge.should_receive(:create).and_return(charge)
+          post :create, params
+        end
         after  { ActionMailer::Base.deliveries.clear }
 
         it "loads the token into @token instance variable" do
@@ -134,8 +144,12 @@ describe UsersController do
         end
       end
 
-      context "with INVALID information" do
+      context "with INVALID user information" do
         let(:params) { {user: { name: "", email: "", password: "" }} }
+        before do
+          charge = double(:charge, successful?: true)
+          StripeWrapper::Charge.stub(:create).and_return(charge)
+        end
         after  { ActionMailer::Base.deliveries.clear }
 
         it "does not create a new user" do
@@ -157,6 +171,37 @@ describe UsersController do
         it "does not send an email" do
           post :create, params
           ActionMailer::Base.deliveries.should be_empty
+        end
+      end
+
+      context "with INVALID card information" do
+        let(:joe) { Fabricate.build(:user) }
+        let(:params) { {user: { name: joe.name, email: joe.email, password: joe.password }, stripeToken: "123" } }
+        before do
+          charge = double(:charge, successful?: false, error_messages: "Card declined")
+          StripeWrapper::Charge.should_receive(:create).and_return(charge)
+        end
+        after  { ActionMailer::Base.deliveries.clear }
+
+        it "does not create a new user" do
+          expect {post :create, params
+            }.to_not change(User, :count)
+        end
+        it "populates a new instance" do
+          post :create, params
+          expect(assigns(:user)).to be_instance_of User
+        end
+        it "renders the new view template" do
+          post :create, params
+          expect(response).to render_template :new
+        end
+        it "does not send an email" do
+          post :create, params
+          ActionMailer::Base.deliveries.should be_empty
+        end
+        it "flashes the error message" do
+          post :create, params
+          expect(flash[:error]).to be_present
         end
       end
     end

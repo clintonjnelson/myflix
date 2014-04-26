@@ -38,10 +38,10 @@ class UsersController < ApplicationController
       ActiveRecord::Base.transaction do
         if @user.save
           @stripeToken = params[:stripeToken]
-          @customer = StripeWrapper::Customer.create( :email => params[:email],
-                                                      :card  => @stripeToken)
-          @charge = StripeWrapper::Charge.create( #card: @stripeToken,
-                                                  :customer    => @customer.response.id,
+          # @customer = StripeWrapper::Customer.create( :email => params[:email],
+          #                                             :card  => @stripeToken)
+          @charge = StripeWrapper::Charge.create( card: @stripeToken,
+                                                  # :customer    => @customer.response.id,
                                                   :amount      => @amount,
                                                   :description => "New Subscription for #{@user.email}",
                                                   :currency    => 'usd')
@@ -51,6 +51,7 @@ class UsersController < ApplicationController
             flash[:notice] = "Welcome to myFlix!"
             signin_user(@user) and return
           else
+            flash[:error] = @charge.error_messages
             raise ActiveRecord::Rollback
           end
         else
@@ -81,31 +82,4 @@ class UsersController < ApplicationController
         @invitation.clear_invitation_token
       end
     end
-
-    # def sign_up_and_pay_or_render_errors
-    #   ActiveRecord::Base.transaction do
-    #     begin
-    #       @user.save!
-    #       Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY']
-    #       @stripeToken = params[:stripeToken]
-    #       @customer = StripeWrapper::Customer.create( :email => params[:stripeEmail],
-    #                                                   :card  => @stripeToken)
-    #       @charge = StripeWrapper::Charge.create( #card: @stripeToken,
-    #                                               :customer    => @customer.id,
-    #                                               :amount      => @amount,
-    #                                               :description => "New Subscription for #{@user.email}",
-    #                                               :currency    => 'usd')
-    #       users_by_invitation_are_cofollowers
-    #       MyflixMailer.delay.welcome_email(@user.id)
-    #       flash[:notice] = "Welcome to myFlix!"
-    #       signin_user(@user) and return
-    #     rescue Stripe::CardError => e
-    #       raise ActiveRecord::Rollback
-    #     #Without rescue, it raises error on browser. Would like to get rid of this.
-    #     rescue ActiveRecord::RecordInvalid
-    #       raise ActiveRecord::Rollback
-    #     end
-    #   end
-    #   render 'new'
-    # end
 end

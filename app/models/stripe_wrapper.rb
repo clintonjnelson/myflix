@@ -6,9 +6,9 @@ module StripeWrapper
 
   class Customer
     attr_reader :response, :status
-    def initialize(response, status)
-      @response = response
-      @status = status
+    def initialize(options={})
+      @response = options[:response]
+      @status = options[:status]
     end
 
     def self.create(options={})
@@ -16,9 +16,9 @@ module StripeWrapper
       begin
         response = Stripe::Customer.create(email: options[:email],
                                             card: options[:card])
-        new(response, :success)
+        new(response: response, status: :success)
       rescue Stripe::InvalidRequestError => e
-        new(e, :error)
+        new(response: e, status: :error)
       end
     end
 
@@ -34,9 +34,9 @@ module StripeWrapper
 
   class Charge
     attr_reader :response, :status
-    def initialize(response, status)
-      @response = response
-      @status = status
+    def initialize(options={})
+      @response = options[:response]
+      @status = options[:status]
     end
 
     def self.create(options={})
@@ -52,10 +52,17 @@ module StripeWrapper
                                            amount: options[:amount],
                                            description: options[:description],
                                            currency: 'usd')
+        # Seems like need to protect this with an "else", but can't find reason with testing
+        else
+          raise "Invalid Card Number"
         end
-        new(response, :success) #make sure this loads response from the ifs
+        new(response: response, status: :success)
       rescue Stripe::CardError => e
-        new(e, :error)
+        new(response: e, status: :error)
+      rescue Stripe::InvalidRequestError => e
+        new(response: e, status: :error)
+      rescue RuntimeError => e
+        new(response: e, status: :error)
       end
     end
 

@@ -78,9 +78,7 @@ describe StripeWrapper::Charge, :vcr do
       #how do I verify that error prevents charge without error killing the test?
     end
     it "raises an InvalidRequestError from Stripe" do
-      expect do
-        StripeWrapper::Charge.create(customer: " ", amount: 999, description: "test")
-      end.to raise_error Stripe::InvalidRequestError
+      expect(charge.error_messages).to eq("No such customer:  ")
     end
   end
 
@@ -94,6 +92,20 @@ describe StripeWrapper::Charge, :vcr do
     it "raises a CardError from Stripe" do
       expect(charge.status).to eq(:error)
     end
+    it "populates the error_messages method with error" do
+      expect(charge.error_messages).to eq("Your card was declined.")
+    end
   end
 
+  context "with card token set to nil" do
+    let(:card_number) { "4000000000000002" }
+    let(:charge)      { StripeWrapper::Charge.create(card: nil, amount: 999, description: "test") }
+
+    it "does not successfully charge the card" do
+      expect(charge).to_not be_successful
+    end
+    it "raises a CardError from Stripe" do
+      expect(charge.status).to eq(:error)
+    end
+  end
 end
