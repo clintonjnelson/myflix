@@ -14,16 +14,11 @@ module StripeWrapper
     def self.create(options={})
       StripeWrapper.set_api_key
       begin
-        if options[:card].present?
-          response = Stripe::Charge.create(card: options[:card],
-                                           amount: options[:amount],
-                                           description: options[:description],
-                                           currency: 'usd')
-          new(response: response, status: :success)
-        # Seems like need to protect this with an "else", but can't find reason with testing
-        else
-          raise "Invalid Card Number"
-        end
+        response = Stripe::Charge.create(card: options[:card],
+                                         amount: options[:amount],
+                                         description: options[:description],
+                                         currency: 'usd')
+        new(response: response, status: :success)
       rescue Stripe::CardError => e
         new(response: e, status: :error)
       rescue Stripe::InvalidRequestError => e
