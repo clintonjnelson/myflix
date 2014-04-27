@@ -13,6 +13,10 @@ class Video < ActiveRecord::Base
   validates :description, presence: true
   validates :video_url,   presence: true
 
+  def decorator
+    VideoDecorator.new(self)
+  end
+
   def self.search_by_title(search_string)
     return [] if search_string.blank?
     where(["title LIKE ?", "%#{search_string}%"]).order(:created_at).reverse
