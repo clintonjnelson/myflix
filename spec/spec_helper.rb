@@ -82,7 +82,9 @@ Capybara.javascript_driver = :webkit
 
 RSpec.configure do |config|
   config.before(:suite) do
-    DatabaseCleaner.clean_with(:truncation)
+    #changed from :truncation to :transaction to eliminate random failures
+    #seemed to be allowing caryover between test suites
+    DatabaseCleaner.clean_with(:transaction)
   end
   config.before(:each) do
     #changed this from :transaction to :truncation to fix ".reload" failures
