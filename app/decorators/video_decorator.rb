@@ -2,6 +2,7 @@ class VideoDecorator
   extend Forwardable  #forwardable is in the standard library
   def_delegators :video, :average_rating
 
+  attr_reader :video
   def initialize(video)
     @video = video
   end
