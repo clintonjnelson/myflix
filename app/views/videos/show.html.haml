@@ -6,10 +6,7 @@
       .video_info.col-sm-3
         %header
           %h3= @video.title
-          - if @video.average_rating.nil?
-            Rating: (not yet rated)
-          - else
-            %span= "Rating: #{@video.average_rating}/5.0"
+          %span= @video.decorator.display_rating
         %p= @video.description
         .actions
           %a.btn.btn-primary(href="#{@video.video_url}") Watch Now

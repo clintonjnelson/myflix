@@ -25,7 +25,7 @@ def click_video_image_link(video)
 end
 
 def signout
-  click_link "Sign Out"
+  visit signout_path
 end
 
 def signin_user(user=nil)

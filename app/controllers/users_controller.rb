@@ -2,7 +2,6 @@ class UsersController < ApplicationController
   before_action :require_signed_in,   only: [:show]
   before_action :set_user,            only: [:show]
   before_action :require_valid_invitation_token, only: [:new_with_token]
-  #before_action :set_monthly_fee,     only: [:new, :new_with_token, :create]
 
   def new
     @user = User.new
@@ -16,10 +15,16 @@ class UsersController < ApplicationController
   end
 
   def create
-    @amount = 999     #set this as a before filter to a method for form & create
-    @token = params[:token]
+    @invitation_token = params[:token]
     @user = User.new(user_params)
-    sign_up_and_pay_or_render_errors
+    @creation = UserRegistration.new(@user).register_new_user(params[:stripeToken], 999, @invitation_token)
+    if @creation.class == User
+      flash[:notice] = "Welcome to myFlix!"
+      signin_user(@creation) and return
+    else
+      flash[:error] = @creation
+      render 'new'
+    end
   end
 
 
@@ -34,33 +39,6 @@ class UsersController < ApplicationController
       redirect_to expired_token_path unless Invitation.find_by(token: params[:token])
     end
 
-    def sign_up_and_pay_or_render_errors
-      ActiveRecord::Base.transaction do
-        begin
-          @user.save!
-          Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY']
-          @stripeToken = params[:stripeToken]
-          @customer = Stripe::Customer.create( :email => params[:stripeEmail],
-                                               :card  => @stripeToken)
-          @charge = Stripe::Charge.create( #card: @stripeToken,
-                                           :customer    => @customer.id,
-                                           :amount      => @amount,
-                                           :description => "New Subscription for #{@user.email}",
-                                           :currency    => 'usd')
-          users_by_invitation_are_cofollowers
-          MyflixMailer.delay.welcome_email(@user.id)
-          flash[:notice] = "Welcome to myFlix!"
-          signin_user(@user) and return
-        rescue Stripe::CardError => e
-          raise ActiveRecord::Rollback
-        #Without rescue, it raises error on browser. Would like to get rid of this.
-        rescue ActiveRecord::RecordInvalid
-          raise ActiveRecord::Rollback
-        end
-      end
-      render 'new'
-    end
-
     def set_user
       @user = User.find(params[:id])
     end
@@ -72,14 +50,40 @@ class UsersController < ApplicationController
     def set_monthly_fee
       @amount = 999
     end
-
-    def users_by_invitation_are_cofollowers
-      if !@token.blank?
-        @invitation = Invitation.find_by(token: @token)
-        @inviter = User.find_by(id: @invitation.inviter_id)
-        @inviter.follow(@user)
-        @user.follow(@inviter)
-        @invitation.clear_invitation_token
-      end
-    end
 end
+
+# def sign_up_and_pay_or_render_errors
+    #   ActiveRecord::Base.transaction do
+    #     if @user.save
+    #       @stripeToken = params[:stripeToken]
+    #       # @customer = StripeWrapper::Customer.create( :email => params[:email],
+    #       #                                             :card  => @stripeToken)
+    #       @charge = StripeWrapper::Charge.create( card: @stripeToken,
+    #                                               # :customer    => @customer.response.id,
+    #                                               :amount      => @amount,
+    #                                               :description => "New Subscription for #{@user.email}",
+    #                                               :currency    => 'usd')
+    #       if @charge.successful?
+    #         users_by_invitation_are_cofollowers
+    #         MyflixMailer.delay.welcome_email(@user.id)
+    #         flash[:notice] = "Welcome to myFlix!"
+    #         signin_user(@user) and return
+    #       else
+    #         flash[:error] = @charge.error_messages
+    #         raise ActiveRecord::Rollback
+    #       end
+    #     else
+    #       raise ActiveRecord::Rollback
+    #     end
+    #   end
+    #   render 'new'
+    # end
+# def users_by_invitation_are_cofollowers
+    #   if !@token.blank?
+    #     @invitation = Invitation.find_by(token: @token)
+    #     @inviter = User.find_by(id: @invitation.inviter_id)
+    #     @inviter.follow(@user)
+    #     @user.follow(@inviter)
+    #     @invitation.clear_invitation_token
+    #   end
+    # end
