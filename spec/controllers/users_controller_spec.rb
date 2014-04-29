@@ -56,148 +56,48 @@ describe UsersController do
 
     describe "POST create" do
 
-      context "with valid user & credit card info" do
+      context "with suggessful registration" do
+        let(:joe)     { Fabricate(:user) }
+        let(:params)  { {user: { name: joe.name, email: joe.email, password: joe.password }, stripeToken: "123", token: "abc" } }
         before do
-          charge = double(:charge, successful?: true)
-          StripeWrapper::Charge.should_receive(:create).and_return(charge)
+          UserRegistration.any_instance.should_receive(:register_new_user).and_return(joe)
         end
-        let(:joe) { Fabricate.build(:user) }
-        let(:params) { {user: { name: joe.name, email: joe.email, password: joe.password }, stripeToken: "123" } }
-
-        it "makes a new user" do
-          expect do
-            post :create, params
-          end.to change(User, :count).by(1)
+        it "assigns the invitation token into an instance variable @invitation_token" do
+          post :create, params
+          expect(assigns(:invitation_token)).to eq("abc")
+        end
+        it "assigns the pre-user instance into an instance variable @user" do
+          post :create, params
+          expect(assigns(:user)).to be_a_new User
+        end
+        it "assigns the new user into the an instance variable @creation" do
+          post :create, params
+          expect(assigns(:creation)).to eq(joe)
+        end
+        it "flashes the error message" do
+          post :create, params
+          expect(flash[:notice]).to be_present
         end
         it "signs in user" do
           post :create, params
           expect(session[:user_id]).to eq(User.find_by(email: joe.email).id)
         end
-
-        context "email sending" do
-          before { post :create, params }
-          after do
-            ActionMailer::Base.deliveries.clear
-            Sidekiq::Worker.clear_all
-          end
-
-          it "sends an email upon successful creation" do
-            ActionMailer::Base.deliveries.should_not be_empty
-          end
-          it "sends email to the registering user's email address" do
-            email = ActionMailer::Base.deliveries.last
-            email.to.should eq([joe.email])
-          end
-          it "has a welcome message in the subject" do
-            email = ActionMailer::Base.deliveries.last
-            email.subject.should include("Welcome to MyFLiX")
-          end
-          it "has a welcome message in the body" do
-            email = ActionMailer::Base.deliveries.last
-            expect(email.parts.first.body.raw_source).to include(joe.name)
-          end
-          it "successfully sends to Sidekiq's queue"# do
-          #   expect(Sidekiq::Extensions::DelayedMailer.jobs.size).to eq(1)
-          # end
-        end
       end
 
-      context "with valid user info, credit card info, AND invitation token" do
-        let(:jen)    { Fabricate(:user) }
-        let(:invite) { Fabricate(:invitation, inviter_id: jen.id) }
-        let(:joe)    { Fabricate.build(:user) }
-        let(:params) { {user: { name: joe.name, email: joe.email, password: joe.password },
-                        token: invite.token} }
+      context "with UNsuggessful registration" do
+        let(:joe)     { Fabricate(:user) }
+        let(:params)  { {user: { name: joe.name, email: joe.email, password: joe.password }, stripeToken: "123" } }
         before do
-          charge = double(:charge, successful?: true)
-          StripeWrapper::Charge.should_receive(:create).and_return(charge)
+          UserRegistration.any_instance.should_receive(:register_new_user).and_return("Please fix the error.")
+        end
+
+        it "assigns the errors into the an instance variable @creation" do
           post :create, params
-        end
-        after  { ActionMailer::Base.deliveries.clear }
-
-        it "loads the token into @token instance variable" do
-          expect(assigns(:token)).to eq(invite.token)
-        end
-        it "loads user input into into @user instance variable" do
-          #ODD - it's assigning to the final state, not to the initial state in the test....
-          expect(assigns(:user)).to eq(User.last)
-        end
-
-        context "after saving the valid user" do
-          it "loads the invitation variable" do
-            expect(assigns(:invitation)).to eq(invite)
-          end
-          it "loads the inviter from the invitation" do
-            expect(assigns(:inviter)).to eq(jen)
-          end
-          it "sets the inviter as following the friend" do
-            joe = User.last
-            expect(jen.leaders).to include(joe)
-          end
-          it "sets the inviter as following the friend" do
-            joe = User.last
-            expect(joe.leaders).to include(jen)
-          end
-          it "sets the invitation token to nil - thus invalidating it from use" do
-            expect(invite.reload.token).to be_nil
-          end
-        end
-      end
-
-      context "with INVALID user information" do
-        let(:params) { {user: { name: "", email: "", password: "" }} }
-        before do
-          charge = double(:charge, successful?: true)
-          StripeWrapper::Charge.stub(:create).and_return(charge)
-        end
-        after  { ActionMailer::Base.deliveries.clear }
-
-        it "does not create a new user" do
-          expect {post :create, params
-            }.to_not change(User, :count)
-        end
-        it "populates a new instance" do
-          post :create, params
-          expect(assigns(:user)).to be_instance_of User
-        end
-        it "records errors on the variable" do
-          post :create, params
-          expect(assigns(:user).errors.size).to be > 0
+          expect(assigns(:creation)).to eq("Please fix the error.")
         end
         it "renders the new view template" do
           post :create, params
           expect(response).to render_template :new
-        end
-        it "does not send an email" do
-          post :create, params
-          ActionMailer::Base.deliveries.should be_empty
-        end
-      end
-
-      context "with INVALID card information" do
-        let(:joe) { Fabricate.build(:user) }
-        let(:params) { {user: { name: joe.name, email: joe.email, password: joe.password }, stripeToken: "123" } }
-        before do
-          charge = double(:charge, successful?: false, error_messages: "Card declined")
-          StripeWrapper::Charge.should_receive(:create).and_return(charge)
-        end
-        after  { ActionMailer::Base.deliveries.clear }
-
-        it "does not create a new user" do
-          expect {post :create, params
-            }.to_not change(User, :count)
-        end
-        it "populates a new instance" do
-          post :create, params
-          expect(assigns(:user)).to be_instance_of User
-        end
-        it "renders the new view template" do
-          post :create, params
-          expect(response).to render_template :new
-        end
-        it "does not send an email" do
-          post :create, params
-          ActionMailer::Base.deliveries.should be_empty
         end
         it "flashes the error message" do
           post :create, params
