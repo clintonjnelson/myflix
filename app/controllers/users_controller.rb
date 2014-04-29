@@ -2,7 +2,6 @@ class UsersController < ApplicationController
   before_action :require_signed_in,   only: [:show]
   before_action :set_user,            only: [:show]
   before_action :require_valid_invitation_token, only: [:new_with_token]
-  #before_action :set_monthly_fee,     only: [:new, :new_with_token, :create]
 
   def new
     @user = User.new
@@ -40,7 +39,20 @@ class UsersController < ApplicationController
       redirect_to expired_token_path unless Invitation.find_by(token: params[:token])
     end
 
-    # def sign_up_and_pay_or_render_errors
+    def set_user
+      @user = User.find(params[:id])
+    end
+
+    def require_owner
+      User.find(params[:id]) == current_user if signed_in?
+    end
+
+    def set_monthly_fee
+      @amount = 999
+    end
+end
+
+# def sign_up_and_pay_or_render_errors
     #   ActiveRecord::Base.transaction do
     #     if @user.save
     #       @stripeToken = params[:stripeToken]
@@ -66,20 +78,7 @@ class UsersController < ApplicationController
     #   end
     #   render 'new'
     # end
-
-    def set_user
-      @user = User.find(params[:id])
-    end
-
-    def require_owner
-      User.find(params[:id]) == current_user if signed_in?
-    end
-
-    def set_monthly_fee
-      @amount = 999
-    end
-
-    # def users_by_invitation_are_cofollowers
+# def users_by_invitation_are_cofollowers
     #   if !@token.blank?
     #     @invitation = Invitation.find_by(token: @token)
     #     @inviter = User.find_by(id: @invitation.inviter_id)
@@ -88,4 +87,3 @@ class UsersController < ApplicationController
     #     @invitation.clear_invitation_token
     #   end
     # end
-end

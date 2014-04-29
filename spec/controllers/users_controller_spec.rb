@@ -17,12 +17,14 @@ describe UsersController do
 
   describe 'Registration' do
 
+
     describe "GET new" do
       it "makes a new instance" do
         get :new
         expect(assigns(:user)).to be_a_new User
       end
     end
+
 
     describe "GET new_with_token" do
 
@@ -53,6 +55,7 @@ describe UsersController do
         end
       end
     end
+
 
     describe "POST create" do
 
@@ -106,6 +109,7 @@ describe UsersController do
       end
     end
   end
+
 
   describe "GET show" do
     let!(:joe) { Fabricate(:user) }

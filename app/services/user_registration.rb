@@ -15,7 +15,7 @@ class UserRegistration
         charge.error_messages
       end
     else
-      @user.errors.full_messages  #return @user with error_messages attached
+      @user.errors.full_messages
     end
   end
 
