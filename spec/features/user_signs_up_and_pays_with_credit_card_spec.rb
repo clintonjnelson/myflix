@@ -34,7 +34,7 @@ feature "user signs up and pays with credit card", { js: true, vcr: true } do
   end
   scenario "with valid user info & declined card" do
     user_fills_form_and_submits(card_number: '4000000000000069')
-    registration_requires_card_error_fixes('expiration date is incorrect', true)
+    registration_requires_card_error_fixes('Your card has expired.', true)
   end
   scenario "with all information correct" do
     user_fills_form_and_submits
@@ -43,6 +43,7 @@ feature "user signs up and pays with credit card", { js: true, vcr: true } do
 end
 
 def user_fills_form_and_submits(options={})
+  # Default fill_in data:
   options[:email]       = 'joe@example.com'   unless options[:email]
   options[:password]    = 'password'          unless options[:password]
   options[:full_name]   = 'joe'               unless options[:full_name]
