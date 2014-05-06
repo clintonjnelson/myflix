@@ -23,7 +23,7 @@ gem 'stripe'
 
 group :development, :test do
   gem 'sqlite3'
-  gem 'faker', '~> 1.1.2'
+  gem 'faker', '~> 1.2'
   gem 'pry'
   gem 'pry-nav'
   gem 'thin'

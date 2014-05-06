@@ -36,3 +36,44 @@
           %fieldset.actions.form-group
             .col-sm-6.col-md-offset-3
               %input(type="submit" value="Add Video" class="btn btn-default")
+
+
+/ %section.admin_add_video
+/   .container
+/     .row
+/       .col-md-10.col-md-offset-1
+/         %ul.nav.nav-tabs
+/           %li{ class: "#{(params[:tab] == 'payments') ? 'active' : '' }" }
+/             =link_to "Recent Payments", video_admin_path(tab: 'payments')
+/           %li{ class: "#{(params[:tab] == 'new_video') ? 'active' : '' }"}
+/             =link_to "Add Video", video_admin_path(tab: 'new_video')
+/         %br
+/         -if params[:tab] == 'payments'
+/           %table.table
+/             %thead
+/               %tr
+/                 %th Name
+/                 %th Email
+/                 %th Amount
+/                 %th Reference ID
+/             %tbody
+/               =@payments.each do |payment|
+/                 %tr
+/                   %td payment.user.fullname
+/                   %td payment.user.email
+/                   %td $9.99
+/                   %td payment.user.stripe_customer_id
+
+/         -if params[:tab] == 'new_video'
+/           =bootstrap_form_for [:admin, @video], layout: :horizontal, label_col: 'col-sm-3', control_col: "col-sm-6" do |f|
+/             %fieldset
+/               =f.text_field :title, control_col: "col-sm-3"
+/               =f.select :categories, options_for_select(category_selector_options), { label: "Category" }, { multiple: true }
+/               =f.text_area :description, rows: 8
+/               =f.file_field :large_cover, label: "Large Cover", class: "form-control"
+/               =f.file_field :small_cover, label: "Small Cover", class: "form-control"
+/               =f.text_field :video_url, label: "Video Url", class: "form-control"
+/             %fieldset.actions.form-group
+/               .col-sm-6.col-md-offset-3
+/                 =f.submit "Add Video", class: "btn btn-default"
+/

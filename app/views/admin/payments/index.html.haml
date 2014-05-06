@@ -1,0 +1,25 @@
+%section.admin_add_video.payment_history
+  .container
+    .row
+      .col-md-10.col-md-offset-1
+        %ul.nav.nav-tabs
+          %li.active
+            %a(href="") Recent Payments
+          %li
+            =link_to 'Add a New Video', new_admin_video_path
+        %table.table
+          %thead
+            %tr
+              %th Name
+              %th Email
+              %th Amount
+              %th Reference ID
+          %tbody
+            -if @payments.present?
+              =@payments.each do |payment|
+                %tr
+                  %td payment.user.fullname
+                  %td payment.user.email
+                  %td $9.99
+                  %td payment.user.stripe_customer_id
+//%section.payment_history
