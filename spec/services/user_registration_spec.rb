@@ -1,16 +1,18 @@
 require 'spec_helper'
 
-describe UserRegistration do
+##THINGS WORK BUT NEED TO UPDATE FOR REGISTRATION USING CUSTOMER and NOT just card
+
+describe UserRegistration, vcr: true do
   let(:jen)         { Fabricate(:user) }
   let(:joe)         { Fabricate.build(:user) }
   let(:stripeToken) { '123abc' }
   let(:amount)      { 555 }
   let(:inviteToken) { nil }
 
-  context "with valid user, card info, AND invitation", vcr: true do
+  context "with valid user & card info" do
     before do
-      charge = double(:charge, successful?: true)
-      StripeWrapper::Charge.should_receive(:create).and_return(charge)
+      customer = double(response: {'id' => 'new-id-123'}, successful?: true)
+      StripeWrapper::Customer.should_receive(:create).and_return(customer)
     end
     after  { ActionMailer::Base.deliveries.clear }
 
@@ -18,20 +20,31 @@ describe UserRegistration do
       UserRegistration.new(joe).register_new_user(stripeToken, amount, inviteToken)
       expect(User.count).to eq(1)
     end
+    it "makes a new customer and puts the id in the user stript_customer_id column" do
+      UserRegistration.new(joe).register_new_user(stripeToken, amount, inviteToken)
+      expect(User.first.stripe_customer_id).to_not be_nil
+    end
+  end
+
+  context "with valid user, card info, AND invitation" do
+    let(:invite) { Fabricate(:invitation, inviter_id: jen.id) }
+    before do
+      customer = double(response: {'id' => 'new-id-123'}, successful?: true)
+      StripeWrapper::Customer.should_receive(:create).and_return(customer)
+    end
+    after  { ActionMailer::Base.deliveries.clear }
+
     it "sets the inviter as following the friend" do
-      invite = Fabricate(:invitation, inviter_id: jen.id)
       UserRegistration.new(joe).register_new_user(stripeToken, amount, invite.token)
       joe = User.last
       expect(jen.leaders).to include(joe)
     end
-    it "sets the inviter as following the friend" do
-      invite = Fabricate(:invitation, inviter_id: jen.id)
+    it "sets the friend as following the inviter" do
       UserRegistration.new(joe).register_new_user(stripeToken, amount, invite.token)
       joe = User.last
       expect(joe.leaders).to include(jen)
     end
     it "sets the invitation token to nil - thus invalidating it from use" do
-      invite = Fabricate(:invitation, inviter_id: jen.id)
       UserRegistration.new(joe).register_new_user(stripeToken, amount, invite.token)
       expect(invite.reload.token).to be_nil
     end
@@ -66,8 +79,8 @@ describe UserRegistration do
 
   context "with valid user and invalid credit card info" do
     before do
-      charge = double(:charge, successful?: false, error_messages: "Card declined.")
-      StripeWrapper::Charge.should_receive(:create).and_return(charge)
+      customer = double(error_message: 'Your card was declined.', successful?: false)
+      StripeWrapper::Customer.should_receive(:create).and_return(customer)
     end
     after do
       ActionMailer::Base.deliveries.clear
@@ -84,7 +97,7 @@ describe UserRegistration do
     end
     it "returns the card error" do
       response = UserRegistration.new(joe).register_new_user(stripeToken, amount, inviteToken)
-      expect(response).to eq("Card declined.")
+      expect(response).to eq("Your card was declined.")
     end
   end
 

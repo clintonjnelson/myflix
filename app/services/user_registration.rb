@@ -1,35 +1,41 @@
 class UserRegistration
-  attr_reader :user
+  attr_accessor :user
   def initialize(user)
     @user = user
   end
 
   def register_new_user(stripeToken, amount, invitation_token)
+    #It's logical, but seems like there should be a better method of doing this.
     if @user.valid?
-      charge = charge_user(stripeToken, amount)
-      if charge.successful?
-        create_user
+      customer = create_customer_subscription(stripeToken)
+      if customer.successful?
+        create_user(customer.response['id'])
         make_cofollowers(invitation_token) if invitation_token.present?
         @user
       else
-        charge.error_messages
+        customer.error_message
       end
     else
       @user.errors.full_messages
     end
   end
 
-  def charge_user(stripeToken, amount)
-    StripeWrapper::Charge.create( card: stripeToken,
-                                  # :customer    => @customer.response.id,
-                                  :amount      => amount,
+  def charge_user(options={})
+    StripeWrapper::Charge.create( :card        => options[:stripeToken],
+                                  :customer    => options[:customer_id],
+                                  :amount      => options[:amount],
                                   :description => "New Subscription for #{@user.email}",
                                   :currency    => 'usd')
   end
 
-  def create_user
+  def create_user(customer_id)
+    @user.stripe_customer_id = customer_id
     @user.save
     MyflixMailer.delay.welcome_email(@user.id)
+  end
+
+  def create_customer_subscription(stripeToken)
+    customer = StripeWrapper::Customer.create(user: @user, plan: 'myflix_premium', card: stripeToken)
   end
 
   def make_cofollowers(invitation_token)
