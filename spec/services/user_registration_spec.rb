@@ -20,7 +20,7 @@ describe UserRegistration, vcr: true do
       UserRegistration.new(joe).register_new_user(stripeToken, amount, inviteToken)
       expect(User.count).to eq(1)
     end
-    it "makes a new customer and puts the id in the user stript_customer_id column" do
+    it "makes a new customer and puts the id in the user stripe_customer_id column" do
       UserRegistration.new(joe).register_new_user(stripeToken, amount, inviteToken)
       expect(User.first.stripe_customer_id).to_not be_nil
     end
