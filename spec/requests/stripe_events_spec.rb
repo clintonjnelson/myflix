@@ -4,18 +4,14 @@ describe "Stripe Event" do
 
   describe "Successful Payment" do
     let(:charge_success) { charge_successful_event }
-    before do
-      Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY']
-    end
 
-    it "loads the response data into the StripeEvent"
     it "makes a new Payment object in the database" do
       post "/stripe_events", charge_success
       expect(Payment.count).to eq(1)
     end
-    # it "saves the stripe charge reference_id into the Payment"
-    # it "saves the user_id reference into the Payment"
-    # it "saves the charge amount into the Payment"
+    it "saves the stripe charge reference_id into the Payment"
+    it "saves the user_id reference into the Payment"
+    it "saves the charge amount into the Payment"
   end
 end
 
