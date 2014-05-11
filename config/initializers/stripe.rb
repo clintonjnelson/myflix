@@ -8,7 +8,9 @@ end
 Stripe.api_key = Rails.configuration.stripe[:secret_key]
 
 StripeEvent.configure do |events|
-  events.subscribe "charge.succeeded" do |event|
-    Payment.create(made_it_here: true)
+  events.subscribe 'charge.succeeded' do |event|
+    Payment.create(user: User.where(stripe_customer_id: event.data.object.card.customer).first,
+                   reference_id: event.data.object.id,
+                   amount: event.data.object.amount)
   end
 end

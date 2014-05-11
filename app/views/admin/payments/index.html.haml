@@ -16,10 +16,10 @@
               %th Reference ID
           %tbody
             -if @payments.present?
-              =@payments.each do |payment|
+              -@payments.each do |payment|
                 %tr
-                  %td payment.user.fullname
-                  %td payment.user.email
-                  %td $9.99
-                  %td payment.user.stripe_customer_id
+                  %td= payment.user.name
+                  %td= payment.user.email
+                  %td= payment.amount
+                  %td= payment.reference_id
 //%section.payment_history

@@ -18,7 +18,7 @@ end
 
 def destroy
   @leader = User.find_by(id: params[:leader_id])
-  @relationship = current_user.following_relationships.find_by(leader_id: params[:leader_id])
+  @relationship = current_user.following_relationships.where(leader_id: params[:leader_id]).first
   if (!@relationship.blank? && @relationship.destroy)
     flash[:notice] = "#{@leader.name} has been removed from your followed people."
   else

@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   end
 
   def new_with_token
-    @invitation = Invitation.find_by(token: params[:token])
+    @invitation = Invitation.where(token: params[:token]).take
     @token = @invitation.token
     @user = User.new(email: @invitation.friend_email)
     render 'new'
@@ -36,7 +36,7 @@ class UsersController < ApplicationController
     end
 
     def require_valid_invitation_token
-      redirect_to expired_token_path unless Invitation.find_by(token: params[:token])
+      redirect_to expired_token_path unless Invitation.where(token: params[:token]).take
     end
 
     def set_user

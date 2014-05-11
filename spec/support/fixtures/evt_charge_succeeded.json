@@ -1,0 +1,14 @@
+{
+  "id": "evt_charge_succeeded",
+  "created": 1399762394,
+  "livemode": false,
+  "type": "charge.succeeded",
+  "data": {
+    "object":{"id":"ch_1040kq2MJ4vAOzhlvxK543Cs","object":"charge","created":1399762394,"livemode":false,"paid":true,"amount":999,"currency":"usd","refunded":false,
+    "card":{"id":"card_103zLB2MJ4vAOzhlcrlEnN5P","object":"card","last4":"4242","type":"Visa","exp_month":5,"exp_year":2014,"fingerprint":"1vn304fKHbHgJdVt","customer":"cus_3zLBfzAWn0rnYL","country":"US","name":null,"address_line1":null,"address_line2":null,"address_city":null,"address_state":null,"address_zip":null,"address_country":null,"cvc_check":null,"address_line1_check":null,"address_zip_check":null},
+    "captured":true,"refunds":[],"balance_transaction":"txn_1040kq2MJ4vAOzhlbCzD6JUH","failure_message":null,"failure_code":null,"amount_refunded":0,"customer":"cus_3zLBfzAWn0rnYL","invoice":null,"description":"Test Webhook","dispute":null,"metadata":{},"statement_description":null}},
+  "object": "event",
+  "pending_webhooks": 1,
+  "request": "iar_40kqEZLEPAWujp"
+}
+
