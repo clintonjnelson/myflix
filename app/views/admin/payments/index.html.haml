@@ -20,6 +20,6 @@
                 %tr
                   %td= payment.user.name
                   %td= payment.user.email
-                  %td= payment.amount
+                  %td= number_to_currency((payment.amount)/100.0)
                   %td= payment.reference_id
 //%section.payment_history

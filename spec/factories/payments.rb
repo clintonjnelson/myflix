@@ -4,5 +4,6 @@ FactoryGirl.define do
   factory :payment, :class => 'Payments' do
     reference_id "MyString"
     user_id 1
+    amount 999
   end
 end

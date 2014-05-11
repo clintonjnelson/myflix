@@ -16,13 +16,13 @@ describe "Stripe Event" do
     it "response status is 200-OK" do
       expect(response.code).to eq('200')
     end
-    it "makes a new Payment object in the database" do
+    it "makes a new Payment object in the payments table" do
       expect(Payment.count).to eq(1)
     end
     it "saves the stripe charge reference_id into the Payment" do
       expect(Payment.last.reference_id).to eq('ch_1040kq2MJ4vAOzhlvxK543Cs')
     end
-    it "saves the user_id reference into the Payment" do
+    it "saves the user's user_id reference into the Payment" do
       expect(Payment.last.user_id).to eq(joe.id)
     end
     it "saves the charge amount into the Payment" do
