@@ -42,6 +42,23 @@ feature "user signs up and pays with credit card", { js: true, vcr: true } do
   end
 end
 
+
+
+def registration_and_payment_are_successful
+  page.should have_content "Welcome, joe"
+end
+
+def registration_requires_user_error_fixes(hidden=nil)
+  page.should have_css('.help-block', ('minimum' || 'be' || "can't")) unless hidden
+  page.should have_content "Register"
+end
+
+def registration_requires_card_error_fixes(error=nil, skip=nil)
+  page.should have_css '.payment-errors' unless skip
+  page.should have_content "#{error}" if error
+  page.should have_content "Register"
+end
+
 def user_fills_form_and_submits(options={})
   # Default fill_in data:
   options[:email]       = 'joe@example.com'   unless options[:email]
@@ -60,19 +77,4 @@ def user_fills_form_and_submits(options={})
   select  options[:month],        from: 'date_month'
   select  options[:year],         from: 'date_year'
   click_button 'Sign Up'
-end
-
-def registration_and_payment_are_successful
-  page.should have_content "Welcome, joe"
-end
-
-def registration_requires_user_error_fixes(hidden=nil)
-  page.should have_css('.help-block', ('minimum' || 'be' || "can't")) unless hidden
-  page.should have_content "Register"
-end
-
-def registration_requires_card_error_fixes(error=nil, skip=nil)
-  page.should have_css '.payment-errors' unless skip
-  page.should have_content "#{error}" if error
-  page.should have_content "Register"
 end

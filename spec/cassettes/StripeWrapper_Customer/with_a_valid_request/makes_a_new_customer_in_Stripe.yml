@@ -18,7 +18,7 @@ http_interactions:
       Content-Type:
       - application/x-www-form-urlencoded
       X-Stripe-Client-User-Agent:
-      - '{"bindings_version":"1.11.0","lang":"ruby","lang_version":"2.0.0 p247 (2013-06-27)","platform":"x86_64-darwin13.1.0","publisher":"stripe","uname":"Darwin
+      - '{"bindings_version":"1.11.0","lang":"ruby","lang_version":"2.0.0 p451 (2014-02-24)","platform":"x86_64-darwin13.1.0","publisher":"stripe","uname":"Darwin
         Zech410 13.1.0 Darwin Kernel Version 13.1.0: Wed Apr  2 23:52:02 PDT 2014;
         root:xnu-2422.92.1~2/RELEASE_X86_64 x86_64"}'
       Content-Length:
@@ -31,33 +31,33 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Mon, 05 May 2014 01:10:22 GMT
+      - Sun, 11 May 2014 00:30:30 GMT
       Content-Type:
       - application/json;charset=utf-8
       Content-Length:
       - '571'
       Cache-Control:
       - no-cache, no-store
-      Access-Control-Allow-Credentials:
-      - 'true'
-      Access-Control-Allow-Methods:
-      - GET, POST, HEAD, OPTIONS, DELETE
       Access-Control-Max-Age:
       - '300'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Credentials:
+      - 'true'
       Strict-Transport-Security:
       - max-age=31556926; includeSubDomains
     body:
       encoding: UTF-8
       string: |
         {
-          "id": "tok_103yXi2MJ4vAOzhlVrXQqSqR",
+          "id": "tok_1040mQ2MJ4vAOzhlJP7rgP8O",
           "livemode": false,
-          "created": 1399252222,
+          "created": 1399768230,
           "used": false,
           "object": "token",
           "type": "card",
           "card": {
-            "id": "card_103yXi2MJ4vAOzhl7lsIUYtD",
+            "id": "card_1040mQ2MJ4vAOzhl0OsXk4V1",
             "object": "card",
             "last4": "4242",
             "type": "Visa",
@@ -76,13 +76,13 @@ http_interactions:
           }
         }
     http_version: 
-  recorded_at: Mon, 05 May 2014 01:10:22 GMT
+  recorded_at: Sun, 11 May 2014 00:30:30 GMT
 - request:
     method: post
     uri: https://api.stripe.com/v1/customers
     body:
       encoding: US-ASCII
-      string: card=tok_103yXi2MJ4vAOzhlVrXQqSqR&plan=myflix_premium&email=joeuser%40example.com
+      string: card=tok_1040mQ2MJ4vAOzhlJP7rgP8O&plan=myflix_base&email=joeuser%40example.com
     headers:
       Accept:
       - '*/*; q=0.5, application/xml'
@@ -95,11 +95,11 @@ http_interactions:
       Content-Type:
       - application/x-www-form-urlencoded
       X-Stripe-Client-User-Agent:
-      - '{"bindings_version":"1.11.0","lang":"ruby","lang_version":"2.0.0 p247 (2013-06-27)","platform":"x86_64-darwin13.1.0","publisher":"stripe","uname":"Darwin
+      - '{"bindings_version":"1.11.0","lang":"ruby","lang_version":"2.0.0 p451 (2014-02-24)","platform":"x86_64-darwin13.1.0","publisher":"stripe","uname":"Darwin
         Zech410 13.1.0 Darwin Kernel Version 13.1.0: Wed Apr  2 23:52:02 PDT 2014;
         root:xnu-2422.92.1~2/RELEASE_X86_64 x86_64"}'
       Content-Length:
-      - '81'
+      - '78'
   response:
     status:
       code: 200
@@ -108,19 +108,19 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Mon, 05 May 2014 01:10:23 GMT
+      - Sun, 11 May 2014 00:30:31 GMT
       Content-Type:
       - application/json;charset=utf-8
       Content-Length:
-      - '2202'
-      Cache-Control:
-      - no-cache, no-store
+      - '2185'
       Access-Control-Allow-Credentials:
       - 'true'
-      Access-Control-Allow-Methods:
-      - GET, POST, HEAD, OPTIONS, DELETE
       Access-Control-Max-Age:
       - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
       Strict-Transport-Security:
       - max-age=31556926; includeSubDomains
     body:
@@ -128,8 +128,8 @@ http_interactions:
       string: |
         {
           "object": "customer",
-          "created": 1399252223,
-          "id": "cus_3yXihSbdwPPsFW",
+          "created": 1399768230,
+          "id": "cus_40mQI152kVSIxF",
           "livemode": false,
           "description": null,
           "email": "joeuser@example.com",
@@ -139,34 +139,34 @@ http_interactions:
             "object": "list",
             "total_count": 1,
             "has_more": false,
-            "url": "/v1/customers/cus_3yXihSbdwPPsFW/subscriptions",
+            "url": "/v1/customers/cus_40mQI152kVSIxF/subscriptions",
             "data": [
               {
-                "id": "sub_3yXifBUBRMCa9T",
+                "id": "sub_40mQWlqiYPZN4O",
                 "plan": {
                   "interval": "month",
-                  "name": "MyFlix Premium Plan",
-                  "created": 1398820480,
+                  "name": "MyFlix Base Plan",
+                  "created": 1399435879,
                   "amount": 999,
                   "currency": "usd",
-                  "id": "myflix_premium",
+                  "id": "myflix_base",
                   "object": "plan",
                   "livemode": false,
                   "interval_count": 1,
-                  "trial_period_days": 30,
+                  "trial_period_days": null,
                   "metadata": {},
-                  "statement_description": "MyFlix Payment"
+                  "statement_description": "MyFlix BasePlan"
                 },
                 "object": "subscription",
-                "start": 1399252223,
-                "status": "trialing",
-                "customer": "cus_3yXihSbdwPPsFW",
+                "start": 1399768230,
+                "status": "active",
+                "customer": "cus_40mQI152kVSIxF",
                 "cancel_at_period_end": false,
-                "current_period_start": 1399252223,
-                "current_period_end": 1401844223,
+                "current_period_start": 1399768230,
+                "current_period_end": 1402446630,
                 "ended_at": null,
-                "trial_start": 1399252223,
-                "trial_end": 1401844223,
+                "trial_start": null,
+                "trial_end": null,
                 "canceled_at": null,
                 "quantity": 1,
                 "application_fee_percent": null,
@@ -181,17 +181,17 @@ http_interactions:
             "object": "list",
             "total_count": 1,
             "has_more": false,
-            "url": "/v1/customers/cus_3yXihSbdwPPsFW/cards",
+            "url": "/v1/customers/cus_40mQI152kVSIxF/cards",
             "data": [
               {
-                "id": "card_103yXi2MJ4vAOzhl7lsIUYtD",
+                "id": "card_1040mQ2MJ4vAOzhl0OsXk4V1",
                 "object": "card",
                 "last4": "4242",
                 "type": "Visa",
                 "exp_month": 12,
                 "exp_year": 2016,
                 "fingerprint": "1vn304fKHbHgJdVt",
-                "customer": "cus_3yXihSbdwPPsFW",
+                "customer": "cus_40mQI152kVSIxF",
                 "country": "US",
                 "name": null,
                 "address_line1": null,
@@ -206,8 +206,8 @@ http_interactions:
               }
             ]
           },
-          "default_card": "card_103yXi2MJ4vAOzhl7lsIUYtD"
+          "default_card": "card_1040mQ2MJ4vAOzhl0OsXk4V1"
         }
     http_version: 
-  recorded_at: Mon, 05 May 2014 01:10:23 GMT
+  recorded_at: Sun, 11 May 2014 00:30:30 GMT
 recorded_with: VCR 2.9.0

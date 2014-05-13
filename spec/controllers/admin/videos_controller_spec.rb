@@ -95,6 +95,6 @@ describe Admin::VideosController do
   end
 
   describe "video_params" do
-    it "should allow through the noted parameters to make a new video valid"
+    it "allows through the noted parameters to make a new video valid"
   end
 end

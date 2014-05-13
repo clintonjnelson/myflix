@@ -18,6 +18,11 @@ def current_admin
   @current_admin ||= Fabricate(:admin)
 end
 
+def stub_event(fixture_id, status = 200)
+  stub_request(:get, "https://api.stripe.com/v1/events/#{fixture_id}").
+  to_return(status: status, body: File.read("spec/support/fixtures/#{fixture_id}.json"))
+end
+
 ############################## FEATURE SPEC METHODS ############################
 
 def click_video_image_link(video)
@@ -39,6 +44,4 @@ end
 def verify_number_of_items_in_queue(number)
   body.should have_field("queue_items[][position]", count: "#{number}")
 end
-
-
 

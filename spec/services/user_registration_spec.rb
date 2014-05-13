@@ -20,7 +20,7 @@ describe UserRegistration, vcr: true do
       UserRegistration.new(joe).register_new_user(stripeToken, amount, inviteToken)
       expect(User.count).to eq(1)
     end
-    it "makes a new customer and puts the id in the user stript_customer_id column" do
+    it "makes a new customer and puts the id in the user stripe_customer_id column" do
       UserRegistration.new(joe).register_new_user(stripeToken, amount, inviteToken)
       expect(User.first.stripe_customer_id).to_not be_nil
     end
@@ -32,7 +32,7 @@ describe UserRegistration, vcr: true do
       customer = double(response: {'id' => 'new-id-123'}, successful?: true)
       StripeWrapper::Customer.should_receive(:create).and_return(customer)
     end
-    after  { ActionMailer::Base.deliveries.clear }
+    after { ActionMailer::Base.deliveries.clear }
 
     it "sets the inviter as following the friend" do
       UserRegistration.new(joe).register_new_user(stripeToken, amount, invite.token)

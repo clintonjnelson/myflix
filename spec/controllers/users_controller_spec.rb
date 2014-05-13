@@ -2,18 +2,6 @@ require 'spec_helper'
 require 'webmock/rspec'
 
 describe UsersController do
-  # Sidekiq::Testing.fake! do
-  #   describe "Sidekiq" do
-  #     before { post :create, params }
-  #     after  do
-  #       Sidekiq::Worker.clear_all
-  #     end
-
-  #     it "successfully sends to Sidekiq's queue" do
-  #       expect(Sidekiq::Extensions::DelayedMailer.jobs.size).to eq(1)
-  #     end
-  #   end
-  # end
 
   describe 'Registration' do
 
@@ -114,13 +102,13 @@ describe UsersController do
   describe "GET show" do
     let!(:joe) { Fabricate(:user) }
 
-    it "should set the @user with user for profile page" do
+    it "sets the @user with user for profile page" do
       sign_in_user
       get :show, id: joe.id
       expect(assigns(:user)).to eq(joe)
     end
 
-    context "should should redirect unauthenticated/guest (not signed-in) users" do
+    context "redirects unauthenticated/guest (not signed-in) users" do
       it_behaves_like "require_signed_in" do
         let(:verb_action) { get :show, id: joe.id }
       end
@@ -131,7 +119,7 @@ describe UsersController do
   describe "set_user" do
     let!(:joe) { Fabricate(:user) }
 
-    it "should det the @user with user for profile page" do
+    it "gets the @user with user for profile page" do
       get :show, id: joe.id
       expect(@controller.instance_eval{set_user}).to eq(joe)
     end

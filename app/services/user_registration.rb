@@ -35,7 +35,7 @@ class UserRegistration
   end
 
   def create_customer_subscription(stripeToken)
-    customer = StripeWrapper::Customer.create(user: @user, plan: 'myflix_premium', card: stripeToken)
+    customer = StripeWrapper::Customer.create(user: @user, plan: 'myflix_base', card: stripeToken)
   end
 
   def make_cofollowers(invitation_token)

@@ -59,7 +59,8 @@ require 'sidekiq/testing'
 require 'sidekiq/testing/inline'
 require 'stripe'
 require 'vcr'
-#require 'webmock/rspec'
+require 'webmock/rspec'
+
 #Sidekiq::Testing.fake!
 
 
@@ -78,13 +79,14 @@ VCR.configure do |c|
   c.ignore_localhost = true
 end
 
-Capybara.javascript_driver = :webkit
+Capybara.javascript_driver = :webkit  #:selenium OR :webkit
+Capybara.server_port = 3005
 
 RSpec.configure do |config|
   config.before(:suite) do
     #changed from :truncation to :transaction to eliminate random failures
     #seemed to be allowing caryover between test suites
-    DatabaseCleaner.clean_with(:transaction)
+    DatabaseCleaner.clean_with(:truncation)
   end
   config.before(:each) do
     #changed this from :transaction to :truncation to fix ".reload" failures

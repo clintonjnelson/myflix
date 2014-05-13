@@ -16,7 +16,7 @@ describe StripeWrapper::Customer, :vcr do
                                                :cvc => "333" }).id }
   let(:joe) { Fabricate(:user, email: 'joeuser@example.com') }
   let(:card_number) { "4242424242424242" }
-  let(:customer) { StripeWrapper::Customer.create(user: joe, card: token, plan: 'myflix_premium') }
+  let(:customer) { StripeWrapper::Customer.create(user: joe, card: token, plan: 'myflix_base') }
 
   before { StripeWrapper.set_api_key }
 
@@ -31,7 +31,7 @@ describe StripeWrapper::Customer, :vcr do
       expect(customer.response['cards']['total_count']).to eq(1)
     end
     it "makes a new plan subscription for the user" do
-      expect(customer.response['subscriptions']['data'][0]['plan']['id']).to eq('myflix_premium')
+      expect(customer.response['subscriptions']['data'][0]['plan']['id']).to eq('myflix_base')
     end
     it "returns successful? is true" do
       expect(customer).to be_successful
@@ -41,7 +41,7 @@ describe StripeWrapper::Customer, :vcr do
   context "with invalid information in the request" do
     context "(specifically invalid card info)" do
       it "raises an error in the Stripe process" do
-        response = StripeWrapper::Customer.create(user: joe, card: "not-a-card", plan: 'myflix_premium')
+        response = StripeWrapper::Customer.create(user: joe, card: "not-a-card", plan: 'myflix_base')
         expect(response).to_not be_successful
       end
     end
@@ -78,7 +78,7 @@ describe StripeWrapper::Charge, :vcr do
   context "with valid charge using customer" do
     let(:card_number) { "4242424242424242" }
     let(:joe) { Fabricate(:user, email: 'joeuser@example.com') }
-    let(:customer) { StripeWrapper::Customer.create(user: joe, card: token, plan: 'myflix_premium') }
+    let(:customer) { StripeWrapper::Customer.create(user: joe, card: token, plan: 'myflix_base') }
 
     it "successfully charges the card" do
       charge = StripeWrapper::Charge.create(customer: customer.response['id'], amount: 999, description: "test")
