@@ -48,8 +48,9 @@ describe SessionsController do
 
   describe "GET destroy" do
     context "for signed in users" do
+      let(:joe) { Fabricate(:user) }
       before do
-        session[:user_id] = 1
+        session[:user_id] = joe.id
         get :destroy
       end
 

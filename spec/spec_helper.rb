@@ -60,6 +60,7 @@ require 'sidekiq/testing/inline'
 require 'stripe'
 require 'vcr'
 require 'webmock/rspec'
+
 #Sidekiq::Testing.fake!
 
 
@@ -78,7 +79,8 @@ VCR.configure do |c|
   c.ignore_localhost = true
 end
 
-Capybara.javascript_driver = :webkit
+Capybara.javascript_driver = :webkit  #:selenium OR :webkit
+Capybara.server_port = 3005
 
 RSpec.configure do |config|
   config.before(:suite) do

@@ -32,7 +32,7 @@ describe UserRegistration, vcr: true do
       customer = double(response: {'id' => 'new-id-123'}, successful?: true)
       StripeWrapper::Customer.should_receive(:create).and_return(customer)
     end
-    after  { ActionMailer::Base.deliveries.clear }
+    after { ActionMailer::Base.deliveries.clear }
 
     it "sets the inviter as following the friend" do
       UserRegistration.new(joe).register_new_user(stripeToken, amount, invite.token)

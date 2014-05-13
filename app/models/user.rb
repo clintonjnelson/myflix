@@ -48,6 +48,10 @@ class User < ActiveRecord::Base
     following_relationships.create(leader: user)
   end
 
+  def lock_account!
+    update_column(:locked_account, true)
+  end
+
   def self.secure_token
     SecureRandom.urlsafe_base64
   end
@@ -63,5 +67,9 @@ class User < ActiveRecord::Base
   def set_token_data_invalid
     update_columns(token: User.secure_token,
                    prt_created_at: 1.day.ago)
+  end
+
+  def unlock_account!
+    update_column(:locked_account, false)
   end
 end

@@ -74,6 +74,22 @@ describe User do
     end
   end
 
+  describe "lock_account!" do
+    it "locks the account of the user by setting locked_account attribute to true" do
+      jen = Fabricate(:user, locked_account: false)
+      jen.lock_account!
+      expect(jen.locked_account).to be_true
+    end
+  end
+
+  describe "unlock_account!" do
+    it "unlocks the account of the user by setting locked_account attribute to false" do
+      jen = Fabricate(:user, locked_account: true)
+      jen.unlock_account!
+      expect(jen.locked_account).to be_false
+    end
+  end
+
   describe "secure_token" do
     it "generates a random token" do
       joe = Fabricate(:user)

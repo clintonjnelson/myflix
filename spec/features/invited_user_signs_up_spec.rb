@@ -2,6 +2,7 @@ require 'spec_helper'
 
 feature "Invited Friend Signs Up", { js: true, vcr: true } do
   given(:joe) { Fabricate(:user) }
+  background { clear_emails }
 
   scenario "user sends invitation to friend who signs up" do
     signin_user(joe)
@@ -28,8 +29,6 @@ feature "Invited Friend Signs Up", { js: true, vcr: true } do
     page.should have_content "Welcome"
     click_link "People"
     already_following("Jen")
-
-    clear_email
   end
 end
 
